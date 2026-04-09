@@ -1,0 +1,29 @@
+!pip install --upgrade openai
+
+import os
+from openai import OpenAI
+
+# Set your Hugging Face token directly
+os.environ["HF_TOKEN"] = "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"
+
+client = OpenAI(
+    base_url="https://router.huggingface.co/v1",
+    api_key=os.environ["HF_TOKEN"],
+)
+
+try:
+    completion = client.chat.completions.create(
+        model="moonshotai/Kimi-K2-Instruct-0905:groq",
+        messages=[
+            {
+                "role": "user",
+                "content": """Write a simple, clear paragraph explaining the future of artificial intelligence in education.
+Keep the explanation between 80–100 words. Use a positive and futuristic tone.
+Present the paragraph in plain English suitable for college students.
+Use the title of the paragraph in your sentence."""
+            }
+        ],
+    )
+    print(completion.choices[0].message.content)
+except Exception as e:
+    print(f"An error occurred: {e}")
