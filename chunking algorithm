@@ -1,0 +1,19 @@
+import spacy
+
+nlp = spacy.load("en_core_web_sm")
+
+text = """Artificial Intelligence is transforming many industries including education.
+Students can now learn using intelligent tutoring systems and virtual assistants.
+Teachers are using AI tools to automate grading and create personalized learning plans."""
+
+sent_chunks = [s.text.strip() for s in nlp(text).sents]
+
+char_chunks = [text[i:i+50] for i in range(0, len(text), 50)]
+
+print("Sentence Chunks:")
+for s in sent_chunks:
+    print(s)
+
+print("\nCharacter Chunks:")
+for c in char_chunks:
+    print(c)
