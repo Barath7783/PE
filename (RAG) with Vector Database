@@ -1,0 +1,43 @@
+!pip install numpy
+!pip install sentence-transformers
+!pip install transformers
+!pip install faiss-cpu
+import numpy as np
+import faiss
+from sentence_transformers import SentenceTransformer
+from transformers import pipeline
+
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+documents = [
+"Artificial intelligence is the simulation of human intelligence in machines.",
+"Natural language processing enables computers to understand, interpret, and manipulate human language.",
+"Python is a versatile programming language used in data science, wed development, and automation.",
+"FAISS is a library for efficient similarity search and clustering of dense vectors.",
+"Retrieval-Augmented Generation combines retrieval techniques with generation models for improved responses."
+]
+
+embeddings = model.encode(documents).astype('float32')
+
+index = faiss.IndexFlatL2(embeddings.shape[1])
+index.add(embeddings)
+
+24
+generator = pipeline('text-generation', model='gpt2')
+# Retrieval + Generation function
+def retrieve_and_generate(query, k=2):
+    query_embedding = model.encode([query]).astype('float32')
+    distances, indices = index.search(query_embedding, k)
+    retrieved_docs = [documents[idx] for idx in indices[0]]
+    context = " ".join(retrieved_docs)
+    prompt = f"context : {context}\nQuestion: {query}\nAnswer:"
+    response = generator(
+        prompt,
+        max_new_tokens=50,
+        num_return_sequences=1
+    )[0]['generated_text']
+    return response
+# Query
+query = "What is Retrieval-Augmented Generation?"
+response = retrieve_and_generate(query)
+print(response)
